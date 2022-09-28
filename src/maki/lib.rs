@@ -3,33 +3,53 @@
 use ink_lang as ink;
 
 mod merkle_tree;
+mod maki_types;
 
 #[ink::contract]
 mod maki {
     
-    use super::*;
     use crate::merkle_tree::MerkleTree;
+    use crate::maki_types::PublicKey;
 
     #[ink(storage)]
     pub struct Maki {
-        messageTree: MerkleTree,
-        stateTree: MerkleTree,
+
+        // Use to determine if a user can still sign-up/vote
+        contract_start_timestamp: Timestamp,
+        signup_duration_seconds: u32,
+        vote_duration_seconds: u32,
+
+        // State
+        message_tree: MerkleTree,
+        state_tree: MerkleTree,
+    }
+
+    /// SignedUp event when a user signed up successfully
+    #[ink(event)]
+    pub struct SignedUp {
+
     }
 
     impl Maki {        
         
         #[ink(constructor)]
-        pub fn new() -> Self {
+        pub fn new(signup_duration_seconds: u32, vote_duration_seconds: u32) -> Self {
             Self { 
-                messageTree: MerkleTree::new(), 
-                stateTree: MerkleTree::new(),
-            }
+                    signup_duration_seconds,
+                    vote_duration_seconds,
+                    contract_start_timestamp: Self::env().block_timestamp(),
+                    message_tree: MerkleTree::new(), 
+                    state_tree: MerkleTree::new(),
+            }            
         }
 
         /// Sign Up can be called by any user whishing to cast a vote.
+        /// /// # Arguments
+        ///
+        /// * `user_public_key` - User's public key that will be used by the coordinator to decrypt commands (encrypted using a shared key)
         #[ink(message)]
-        pub fn sign_up(&mut self) {
-            self.value = !self.value;
+        pub fn sign_up(&mut self, user_public_key : PublicKey) {
+            
         }
     }
 
