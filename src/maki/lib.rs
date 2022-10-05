@@ -2,6 +2,8 @@
 
 use ink_lang as ink;
 
+use merkle_tree::MERKLE_TREE_DEFAULT_DEPTH;
+
 mod merkle_tree;
 mod maki_types;
 
@@ -30,7 +32,7 @@ mod maki {
 
     }
 
-    impl Maki {        
+    impl Maki {       
         
         #[ink(constructor)]
         pub fn new(signup_duration_seconds: u32, vote_duration_seconds: u32) -> Self {
@@ -38,8 +40,8 @@ mod maki {
                     signup_duration_seconds,
                     vote_duration_seconds,
                     contract_start_timestamp: Self::env().block_timestamp(),
-                    message_tree: MerkleTree::new(), 
-                    state_tree: MerkleTree::new(),
+                    message_tree: MerkleTree::new(MERKLE_TREE_DEFAULT_DEPTH), 
+                    state_tree: MerkleTree::new(MERKLE_TREE_DEFAULT_DEPTH),
             }            
         }
 

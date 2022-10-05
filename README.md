@@ -11,7 +11,7 @@ Maki is a [MACI](https://ethresear.ch/t/minimal-anti-collusion-infrastructure/54
 
 ### Build
 
-`cargo +nightly contract build`
+`cargo +nightly-2022-08-15 contract build`
 
 ### Test
 
