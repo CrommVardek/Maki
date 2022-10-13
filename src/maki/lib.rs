@@ -2,24 +2,25 @@
 
 use ink_lang as ink;
 
-use merkle_tree::MERKLE_TREE_DEFAULT_DEPTH;
-
-mod merkle_tree;
 mod maki_types;
+mod merkle_tree;
 
 #[ink::contract]
 mod maki {
-    
-    use crate::merkle_tree::MerkleTree;
+
     use crate::maki_types::PublicKey;
+    use crate::merkle_tree::{MerkleTree, MERKLE_TREE_DEFAULT_DEPTH};
 
     #[ink(storage)]
     pub struct Maki {
-
         // Use to determine if a user can still sign-up/vote
         contract_start_timestamp: Timestamp,
         signup_duration_seconds: u32,
         vote_duration_seconds: u32,
+
+        coordinator_public_key: PublicKey,
+
+        user_vote_credit: u16,
 
         // State
         message_tree: MerkleTree,
@@ -29,20 +30,26 @@ mod maki {
     /// SignedUp event when a user signed up successfully
     #[ink(event)]
     pub struct SignedUp {
-
+        user_public_key: PublicKey,
     }
 
-    impl Maki {       
-        
+    impl Maki {
         #[ink(constructor)]
-        pub fn new(signup_duration_seconds: u32, vote_duration_seconds: u32) -> Self {
-            Self { 
-                    signup_duration_seconds,
-                    vote_duration_seconds,
-                    contract_start_timestamp: Self::env().block_timestamp(),
-                    message_tree: MerkleTree::new(MERKLE_TREE_DEFAULT_DEPTH), 
-                    state_tree: MerkleTree::new(MERKLE_TREE_DEFAULT_DEPTH),
-            }            
+        pub fn new(
+            signup_duration_seconds: u32,
+            vote_duration_seconds: u32,
+            coordinator_public_key: PublicKey,
+            user_vote_credit: u16,
+        ) -> Self {
+            Self {
+                signup_duration_seconds,
+                vote_duration_seconds,
+                coordinator_public_key,
+                user_vote_credit,
+                contract_start_timestamp: Self::env().block_timestamp(),
+                message_tree: MerkleTree::new(MERKLE_TREE_DEFAULT_DEPTH).unwrap(),
+                state_tree: MerkleTree::new(MERKLE_TREE_DEFAULT_DEPTH).unwrap(),
+            }
         }
 
         /// Sign Up can be called by any user whishing to cast a vote.
@@ -50,8 +57,8 @@ mod maki {
         ///
         /// * `user_public_key` - User's public key that will be used by the coordinator to decrypt commands (encrypted using a shared key)
         #[ink(message)]
-        pub fn sign_up(&mut self, user_public_key : PublicKey) {
-            
+        pub fn sign_up(&mut self, user_public_key: PublicKey) {
+            self.env().emit_event(SignedUp { user_public_key });
         }
     }
 
