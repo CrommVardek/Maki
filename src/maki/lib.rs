@@ -2,12 +2,14 @@
 
 use ink_lang as ink;
 
+mod maki_objects;
 mod maki_types;
 mod merkle_tree;
 
 #[ink::contract]
 mod maki {
 
+    use crate::maki_objects::StateLeaf;
     use crate::maki_types::PublicKey;
     use crate::merkle_tree::{MerkleTree, MERKLE_TREE_DEFAULT_DEPTH};
 
@@ -59,6 +61,13 @@ mod maki {
         #[ink(message)]
         pub fn sign_up(&mut self, user_public_key: PublicKey) {
             self.env().emit_event(SignedUp { user_public_key });
+
+            let state_leaf = StateLeaf {
+                public_key: user_public_key,
+                voice_credit_balance: self.user_vote_credit,
+                nounce: [0; 32],
+
+            };
         }
     }
 
