@@ -62,12 +62,10 @@ mod maki {
         pub fn sign_up(&mut self, user_public_key: PublicKey) {
             self.env().emit_event(SignedUp { user_public_key });
 
-            let state_leaf = StateLeaf {
-                public_key: user_public_key,
-                voice_credit_balance: self.user_vote_credit,
-                nounce: [0; 32],
+            let state_leaf =
+                StateLeaf::new(user_public_key, self.user_vote_credit, [0; 32], [0; 32]);
 
-            };
+            
         }
     }
 
