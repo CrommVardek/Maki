@@ -16,4 +16,4 @@ Maki is a [MACI](https://ethresear.ch/t/minimal-anti-collusion-infrastructure/54
 ### Test
 
 Run the test :
-`cargo +nightly test`
+`cargo +nightly-2022-08-15 test`

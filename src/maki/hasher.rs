@@ -1,6 +1,11 @@
 
+
 pub mod hasher {
-    pub fn hash_state_leaf(state_leaf: StateLeaf) -> [u8; 32] {
-        
+    use crate::maki_types::HashedLeaf;
+    use crate::maki_objects::StateLeaf;
+
+    //TODO 
+    pub fn hash_state_leaf(state_leaf: StateLeaf) -> HashedLeaf {
+        return [0; 32];
     }
 }

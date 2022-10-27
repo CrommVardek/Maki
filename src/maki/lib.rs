@@ -1,10 +1,12 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 use ink_lang as ink;
+use ink_env;
 
 mod maki_objects;
 mod maki_types;
 mod merkle_tree;
+mod hasher;
 
 #[ink::contract]
 mod maki {
@@ -12,6 +14,7 @@ mod maki {
     use crate::maki_objects::StateLeaf;
     use crate::maki_types::PublicKey;
     use crate::merkle_tree::{MerkleTree, MERKLE_TREE_DEFAULT_DEPTH};
+    use crate::hasher::hasher::hash_state_leaf;
 
     #[ink(storage)]
     pub struct Maki {
@@ -65,13 +68,10 @@ mod maki {
             let state_leaf =
                 StateLeaf::new(user_public_key, self.user_vote_credit, [0; 32], [0; 32]);
 
-            
+            let hashed_leaf = hash_state_leaf(state_leaf);
         }
     }
 
-    /// Unit tests in Rust are normally defined within such a `#[cfg(test)]`
-    /// module and test functions are marked with a `#[test]` attribute.
-    /// The below code is technically just normal Rust code.
     #[cfg(test)]
     mod tests {
         // Imports all the definitions from the outer scope so we can use them here.
@@ -79,21 +79,29 @@ mod maki {
 
         // Imports `ink_lang` so we can use `#[ink::test]`.
         use ink_lang as ink;
+        use ink_env;
+        
+        type Event = <Maki as ::ink_lang::reflect::ContractEventBase>::Type;
 
-        // We test if the default constructor does its job.
-        // #[ink::test]
-        // fn default_works() {
-        //     let maki = Maki::default();
-        //     assert_eq!(maki.get(), false);
-        // }
+        #[ink::test]
+        fn sign_up_emits_sign_up_event() {
+            let mut maki = Maki::new(1000,1000, [0; 32], 100);
 
-        // We test a simple use case of our contract.
-        // #[ink::test]
-        // fn it_works() {
-        //     let mut maki = Maki::new(false);
-        //     assert_eq!(maki.get(), false);
-        //     maki.flip();
-        //     assert_eq!(maki.get(), true);
-        // }
+            let upk = [1; 32];
+            maki.sign_up(upk);
+
+            let events = ink_env::test::recorded_events().collect::<Vec<_>>();
+
+            let events_length = &events.len();
+
+            assert_eq!(*events_length, 1);
+            let sign_up_event = &events[0];
+            let decoded_event = <Event as scale::Decode>::decode(&mut &sign_up_event.data[..]).expect("encountered invalid contract event data buffer");
+            if let Event::SignedUp(SignedUp { user_public_key }) = decoded_event {
+                assert_eq!(user_public_key, upk, "encountered invalid SignedUp.user_public_key");
+            } else {
+                panic!("encountered unexpected event kind: expected a SignedUp event")
+            }
+        }
     }
 }
