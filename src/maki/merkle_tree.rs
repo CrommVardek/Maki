@@ -27,5 +27,5 @@ impl MerkleTree {
         Ok(MerkleTree { tree_depth })
     }
 
-    pub fn insert_leaf(leaf: HashedLeaf) {}
+    pub fn insert_leaf(&mut self, leaf: HashedLeaf) {}
 }
