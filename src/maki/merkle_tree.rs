@@ -8,15 +8,18 @@ const MERKLE_TREE_MAX_DEPTH: u8 = 32;
 
 pub const MERKLE_TREE_DEFAULT_DEPTH: u8 = 24;
 
-#[derive(scale::Encode, scale::Decode, PackedLayout, SpreadLayout, SpreadAllocate)]
+#[derive(scale::Encode, scale::Decode, PackedLayout, SpreadLayout, SpreadAllocate, PartialEq)]
 #[cfg_attr(feature = "std", derive(Debug, StorageLayout))]
 pub struct MerkleTree {
     tree_depth: u8,
+    next_leaf_index: u128,
+    root: [u8; 32],
 }
 
 #[derive(Debug, PartialEq)]
 pub enum MerkleTreeError {
     InvalidTreeDepth,
+    TreeIsFull,
 }
 
 impl MerkleTree {
@@ -24,8 +27,23 @@ impl MerkleTree {
         if tree_depth <= 0 || tree_depth > MERKLE_TREE_MAX_DEPTH {
             return Err(MerkleTreeError::InvalidTreeDepth);
         }
-        Ok(MerkleTree { tree_depth })
+        //TODO
+        Ok(MerkleTree { tree_depth, next_leaf_index: 0 })
     }
 
-    pub fn insert_leaf(&mut self, leaf: HashedLeaf) {}
+    pub fn insert_leaf(&mut self, leaf: &HashedLeaf) -> Result<u128, MerkleTreeError> {
+        if self.next_leaf_index >= 1 << self.tree_depth {
+            return Err(MerkleTreeError::TreeIsFull);
+        }
+
+
+
+        return Ok(self.next_leaf_index);
+    }
+}
+
+
+#[cfg(test)]
+mod tests {
+
 }
