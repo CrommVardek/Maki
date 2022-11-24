@@ -1,3 +1,4 @@
+use hex_literal::hex;
 #[cfg(feature = "std")]
 use ink_storage::traits::StorageLayout;
 use ink_storage::traits::{PackedLayout, SpreadAllocate, SpreadLayout};
@@ -27,8 +28,18 @@ impl MerkleTree {
         if tree_depth <= 0 || tree_depth > MERKLE_TREE_MAX_DEPTH {
             return Err(MerkleTreeError::InvalidTreeDepth);
         }
+
+        let zeros: [[u8; 32]; MERKLE_TREE_MAX_DEPTH];
+
+        //TODO : change this value
+        zeros[0] = hex!("12633468165168489165651891165198498451781651121684981651891465318");
+
         //TODO
-        Ok(MerkleTree { tree_depth, next_leaf_index: 0 })
+        Ok(MerkleTree {
+            tree_depth,
+            next_leaf_index: 0,
+            root: zeros[0],
+        })
     }
 
     pub fn insert_leaf(&mut self, leaf: &HashedLeaf) -> Result<u128, MerkleTreeError> {
@@ -36,14 +47,9 @@ impl MerkleTree {
             return Err(MerkleTreeError::TreeIsFull);
         }
 
-
-
         return Ok(self.next_leaf_index);
     }
 }
 
-
 #[cfg(test)]
-mod tests {
-
-}
+mod tests {}

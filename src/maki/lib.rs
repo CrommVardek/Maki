@@ -32,6 +32,16 @@ mod maki {
         state_tree: MerkleTree,
     }
 
+    /// Errors which may be returned from the smart contract
+    #[derive(Debug, PartialEq, Eq, scale::Encode, scale::Decode)]
+    #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
+    pub enum Error {
+        SignUpPeriodEnded,
+        VotingPeriodEnded,
+    }
+
+    pub type Result<T> = core::result::Result<T, Error>;
+
     /// SignedUp event when a user signed up successfully
     #[ink(event)]
     pub struct SignedUp {
@@ -58,19 +68,31 @@ mod maki {
         }
 
         /// Sign Up can be called by any user whishing to cast a vote.
-        /// /// # Arguments
+        /// ## Arguments
         ///
         /// * `user_public_key` - User's public key that will be used by the coordinator to decrypt commands (encrypted using a shared key)
+        ///
+        /// ## Returns
         #[ink(message)]
-        pub fn sign_up(&mut self, user_public_key: PublicKey) {
-            self.env().emit_event(SignedUp { user_public_key });
+        pub fn sign_up(&mut self, user_public_key: PublicKey) -> Result<()> {
+            let block_timestamp = self.env().block_timestamp();
+
+            if self.contract_start_timestamp + u64::from(self.signup_duration_seconds) * 1000
+                > block_timestamp
+            {
+                return Err(Error::SignUpPeriodEnded);
+            }
 
             let state_leaf =
                 StateLeaf::new(user_public_key, self.user_vote_credit, [0; 32], [0; 32]);
 
             let hashed_leaf = hash_state_leaf(&state_leaf);
 
-            self.state_tree.insert_leaf(hashed_leaf);
+            self.state_tree.insert_leaf(&hashed_leaf);
+
+            self.env().emit_event(SignedUp { user_public_key });
+
+            Ok(())
         }
     }
 
