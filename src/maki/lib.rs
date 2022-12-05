@@ -62,8 +62,8 @@ mod maki {
                 coordinator_public_key,
                 user_vote_credit,
                 contract_start_timestamp: Self::env().block_timestamp(),
-                message_tree: MerkleTree::new(MERKLE_TREE_DEFAULT_DEPTH).unwrap(),
-                state_tree: MerkleTree::new(MERKLE_TREE_DEFAULT_DEPTH).unwrap(),
+                message_tree: MerkleTree::new(MERKLE_TREE_DEFAULT_DEPTH as u8).unwrap(),
+                state_tree: MerkleTree::new(MERKLE_TREE_DEFAULT_DEPTH as u8).unwrap(),
             }
         }
 
