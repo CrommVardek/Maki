@@ -16,13 +16,21 @@ pub mod hasher {
             state_leaf.nounce,
         ];
 
-        let bls_scalars: Vec<BlsScalar> = plain_leaf.iter().map(|i| bytes_to_scalar(*i)).collect();
+        poseidon_hash(&plain_leaf)
+    }
+
+    pub fn hash_left_right(left: [u8; 32], right: [u8; 32]) -> [u8; 32] {
+        poseidon_hash(&[left, right])
+    }
+
+    fn poseidon_hash(elements_to_hash: &[[u8; 32]]) -> [u8; 32] {
+        let bls_scalars: Vec<BlsScalar> = elements_to_hash.iter().map(|i| bytes_to_scalar(*i)).collect();
 
         let result = dusk_poseidon::sponge::hash(&bls_scalars);
 
-        let hashed_leaf = scalar_to_bytes(result);
+        let hashBytes = scalar_to_bytes(result);
 
-        hashed_leaf
+        hashBytes
     }
 
     fn bytes_to_scalar(bytes: [u8; 32]) -> BlsScalar {

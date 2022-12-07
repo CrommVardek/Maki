@@ -9,6 +9,43 @@ const MERKLE_TREE_MAX_DEPTH: usize = 32;
 
 pub const MERKLE_TREE_DEFAULT_DEPTH: usize = 24;
 
+//TODO : populate zeros (Change 1 to 32 index values)
+const MERKLE_TREE_ZEROS: [[u8; 32]; MERKLE_TREE_MAX_DEPTH + 1] = [
+    hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"), // BLAKE2b-256 Hash of "maki"
+    hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
+    hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
+    hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
+    hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
+    hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
+    hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
+    hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
+    hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
+    hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
+    hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
+    hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
+    hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
+    hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
+    hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
+    hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
+    hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
+    hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
+    hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
+    hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
+    hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
+    hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
+    hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
+    hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
+    hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
+    hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
+    hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
+    hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
+    hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
+    hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
+    hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
+    hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
+    hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
+];
+
 #[derive(scale::Encode, scale::Decode, PackedLayout, SpreadLayout, SpreadAllocate, PartialEq)]
 #[cfg_attr(feature = "std", derive(Debug, StorageLayout))]
 pub struct MerkleTree {
@@ -29,42 +66,7 @@ impl MerkleTree {
             return Err(MerkleTreeError::InvalidTreeDepth);
         }
 
-        //TODO : populate zeros (Change 1 to 32 index values)
-        let zeros: [[u8; 32]; MERKLE_TREE_MAX_DEPTH + 1] = [
-            hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"), // BLAKE2b-256 Hash of "maki"
-            hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
-            hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
-            hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
-            hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
-            hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
-            hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
-            hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
-            hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
-            hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
-            hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
-            hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
-            hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
-            hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
-            hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
-            hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
-            hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
-            hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
-            hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
-            hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
-            hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
-            hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
-            hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
-            hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
-            hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
-            hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
-            hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
-            hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
-            hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
-            hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
-            hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
-            hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
-            hex!("7b7fd692a95c21575ccf41a10c5fffa47e231e9b6503551fc397a2024e7d1b45"),
-        ];
+        let zeros = MERKLE_TREE_ZEROS;
 
         Ok(MerkleTree {
             tree_depth,
@@ -85,8 +87,7 @@ impl MerkleTree {
             let right;
 
             if current_leaf_index % 2 == 0 {
-                //TODO zeros outside of merkle_tree file
-                right = zeros[i];
+                right = MERKLE_TREE_ZEROS[usize::from(i)];
                 left = leaf;
 
                 //TODO subtree
