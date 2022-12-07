@@ -111,6 +111,8 @@ impl MerkleTree {
 
         self.root = current_level_hash;
 
+        self.next_leaf_index += 1;
+
         // TODO
 
         return Ok(self.next_leaf_index);
