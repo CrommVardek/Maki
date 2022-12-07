@@ -19,12 +19,15 @@ pub mod hasher {
         poseidon_hash(&plain_leaf)
     }
 
-    pub fn hash_left_right(left: [u8; 32], right: [u8; 32]) -> [u8; 32] {
-        poseidon_hash(&[left, right])
+    pub fn hash_left_right(left: &[u8; 32], right: &[u8; 32]) -> [u8; 32] {
+        poseidon_hash(&[*left, *right])
     }
 
     fn poseidon_hash(elements_to_hash: &[[u8; 32]]) -> [u8; 32] {
-        let bls_scalars: Vec<BlsScalar> = elements_to_hash.iter().map(|i| bytes_to_scalar(*i)).collect();
+        let bls_scalars: Vec<BlsScalar> = elements_to_hash
+            .iter()
+            .map(|i| bytes_to_scalar(*i))
+            .collect();
 
         let result = dusk_poseidon::sponge::hash(&bls_scalars);
 
@@ -39,12 +42,12 @@ pub mod hasher {
 
     fn bytes_to_u64(bytes: [u8; 32]) -> [u64; 4] {
         let mut result = [0; 4];
-    
+
         for i in 0..4 {
             let bytes_array = <&[u8; 8]>::try_from(&bytes[i * 8..(i + 1) * 8]).unwrap();
             result[i] = u64::from_be_bytes(*bytes_array);
         }
-    
+
         result
     }
 
@@ -54,14 +57,14 @@ pub mod hasher {
 
     fn u64_to_bytes(array: [u64; 4]) -> [u8; 32] {
         let mut result = [0; 32];
-    
+
         for i in 0..array.len() {
             let bytes_array = array[i].to_be_bytes();
             for j in 0..bytes_array.len() {
                 result[i * 8 + j] = bytes_array[j];
             }
         }
-    
+
         result
     }
 }
