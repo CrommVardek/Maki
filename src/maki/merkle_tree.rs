@@ -72,7 +72,7 @@ impl MerkleTree {
 
         // pre-fill subtree with zeros.
         let mut filled_subtrees = [[Default::default(); 32]; MERKLE_TREE_MAX_DEPTH];
-        filled_subtrees.copy_from_slice(&zeros[0..usize::from(tree_depth)]);
+        filled_subtrees.copy_from_slice(&zeros[0..32]);
 
         Ok(MerkleTree {
             tree_depth,
@@ -113,11 +113,29 @@ impl MerkleTree {
 
         self.next_leaf_index += 1;
 
-        // TODO
-
         return Ok(self.next_leaf_index);
     }
 }
 
 #[cfg(test)]
-mod tests {}
+mod tests {
+
+    use super::*;
+
+    
+    const TEST_DEPTH: usize = 4;
+
+    #[test]
+    fn test_error_when_tree_is_full() {
+        let mut tree = MerkleTree::new(TEST_DEPTH as u8).unwrap();
+
+        for i in 0..2usize.pow(TEST_DEPTH as u32) {
+            tree.insert_leaf([i as u8 + 1; 32]).unwrap();
+        }
+
+        let err = tree.insert_leaf([2; 32]);
+
+        assert_eq!(err, Err(MerkleTreeError::TreeIsFull));
+    }
+
+}

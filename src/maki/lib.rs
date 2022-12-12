@@ -88,9 +88,11 @@ mod maki {
 
             let hashed_leaf = hash_state_leaf(&state_leaf);
 
-            self.state_tree.insert_leaf(&hashed_leaf);
+            let result = self.state_tree.insert_leaf(hashed_leaf);
 
-            self.env().emit_event(SignedUp { user_public_key });
+            if result.is_ok() {
+                self.env().emit_event(SignedUp { user_public_key });
+            }
 
             Ok(())
         }
