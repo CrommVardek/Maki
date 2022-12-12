@@ -122,7 +122,6 @@ mod tests {
 
     use super::*;
 
-    
     const TEST_DEPTH: usize = 4;
 
     #[test]
@@ -137,5 +136,4 @@ mod tests {
 
         assert_eq!(err, Err(MerkleTreeError::TreeIsFull));
     }
-
 }

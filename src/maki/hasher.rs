@@ -31,9 +31,9 @@ pub mod hasher {
 
         let result = dusk_poseidon::sponge::hash(&bls_scalars);
 
-        let hashBytes = scalar_to_bytes(result);
+        let hash_bytes = scalar_to_bytes(result);
 
-        hashBytes
+        hash_bytes
     }
 
     fn bytes_to_scalar(bytes: [u8; 32]) -> BlsScalar {
