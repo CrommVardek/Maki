@@ -121,18 +121,33 @@ mod tests {
 
     use super::*;
 
-    const TEST_DEPTH: usize = 4;
+    const TEST_DEPTH: usize = 10;
 
     #[test]
     fn test_error_when_tree_is_full() {
         let mut tree = MerkleTree::new(TEST_DEPTH as u8).unwrap();
 
         for i in 0..2usize.pow(TEST_DEPTH as u32) {
-            tree.insert_leaf([i as u8 + 1; 32]).unwrap();
+            tree.insert_leaf([(i % (2usize.pow(8)))as u8; 32]).unwrap();
         }
 
         let err = tree.insert_leaf([2; 32]);
 
         assert_eq!(err, Err(MerkleTreeError::TreeIsFull));
+    }
+
+    #[test]
+    fn test_error_when_tree_depth_exceeds_max() {
+        let tree = MerkleTree::new((MERKLE_TREE_MAX_DEPTH+1) as u8);
+
+        assert!(tree.is_err());
+        assert_eq!(tree, Err(MerkleTreeError::InvalidTreeDepth));
+    }
+
+    #[test]
+    fn test_empty_tree_root_is_first_zero_value() {
+        let tree = MerkleTree::new(TEST_DEPTH as u8).unwrap();
+
+        assert_eq!(tree.root, MERKLE_TREE_ZEROS[usize::from(TEST_DEPTH)]);
     }
 }
