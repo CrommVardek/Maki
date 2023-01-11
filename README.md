@@ -29,7 +29,7 @@ Refer to the official ink documentation for instruction on how to [deploy an ink
 
 Refer to the official ink documentation for instruction on how to [call an ink! contract's function](https://use.ink/getting-started/calling-your-contract)
 
-The Maki's callable function are `sign_up` and 
+The Maki's callable function are `sign_up` and `publish_message`
 
 ## Credits
 
