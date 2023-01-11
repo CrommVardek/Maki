@@ -23,6 +23,14 @@ Run the tests :
 
 ### Deploy
 
+Refer to the official ink documentation for instruction on how to [deploy an ink! contract](https://use.ink/getting-started/deploy-your-contract/)
+
+### Use
+
+Refer to the official ink documentation for instruction on how to [call an ink! contract's function](https://use.ink/getting-started/calling-your-contract)
+
+The Maki's callable function are `sign_up` and 
+
 ## Credits
 
 Maki is based on these researches at [eth research](https://ethresear.ch/t/minimal-anti-collusion-infrastructure/5413), the implementation mostly follows the [maci specifications](https://github.com/privacy-scaling-explorations/maci/tree/c4fdbcf7373080ba62225ba669a1bf77e057c483/specs) and is therefore largly inspired by [maci code base](https://github.com/privacy-scaling-explorations/maci). Thanks to all the people who worked on MACI.
