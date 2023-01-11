@@ -23,11 +23,11 @@ Run the tests :
 
 ### Deploy
 
-Refer to the official ink documentation for instruction on how to [deploy an ink! contract](https://use.ink/getting-started/deploy-your-contract/)
+Refer to the official ink documentation for instructions on how to [deploy an ink! contract](https://use.ink/getting-started/deploy-your-contract/)
 
 ### Use
 
-Refer to the official ink documentation for instruction on how to [call an ink! contract's function](https://use.ink/getting-started/calling-your-contract)
+Refer to the official ink documentation for instructions on how to [call an ink! contract's function](https://use.ink/getting-started/calling-your-contract)
 
 The Maki's callable function are `sign_up` and `publish_message`
 
