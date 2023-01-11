@@ -11,9 +11,18 @@ Maki is a [MACI](https://ethresear.ch/t/minimal-anti-collusion-infrastructure/54
 
 ### Build
 
+Command to build :
+
 `cargo +nightly-2022-08-15 contract build`
 
 ### Test
 
-Run the test :
+Run the tests :
+
 `cargo +nightly-2022-08-15 test`
+
+### Deploy
+
+## Credits
+
+Maki is based on these researches at [eth research](https://ethresear.ch/t/minimal-anti-collusion-infrastructure/5413), the implementation mostly follows the [maci specifications](https://github.com/privacy-scaling-explorations/maci/tree/c4fdbcf7373080ba62225ba669a1bf77e057c483/specs) and is therefore largly inspired by [maci code base](https://github.com/privacy-scaling-explorations/maci). Thanks to all the people who worked on MACI.
