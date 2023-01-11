@@ -28,3 +28,9 @@ impl StateLeaf {
         }
     }
 }
+
+#[derive(scale::Encode, scale::Decode, PackedLayout, SpreadLayout, SpreadAllocate)]
+#[cfg_attr(feature = "std", derive(Debug, StorageLayout))]
+pub struct Message {
+    pub data: [u8; 32],
+}

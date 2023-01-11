@@ -12,7 +12,7 @@ mod merkle_tree;
 mod maki {
 
     use crate::hasher::hasher::hash_state_leaf;
-    use crate::maki_objects::StateLeaf;
+    use crate::maki_objects::{Message, StateLeaf};
     use crate::maki_types::PublicKey;
     use crate::merkle_tree::{MerkleTree, MERKLE_TREE_DEFAULT_DEPTH};
 
@@ -30,6 +30,8 @@ mod maki {
         // State
         message_tree: MerkleTree,
         state_tree: MerkleTree,
+
+        numberMessages: u32,
     }
 
     /// Errors which may be returned from the smart contract
@@ -38,6 +40,7 @@ mod maki {
     pub enum Error {
         SignUpPeriodEnded,
         VotingPeriodEnded,
+        MessageLimitReached,
     }
 
     pub type Result<T> = core::result::Result<T, Error>;
@@ -45,6 +48,13 @@ mod maki {
     /// SignedUp event when a user signed up successfully
     #[ink(event)]
     pub struct SignedUp {
+        user_public_key: PublicKey,
+    }
+
+    /// MessagePublished event when a user published a message successfully
+    #[ink(event)]
+    pub struct MessagePublished {
+        message: Message,
         user_public_key: PublicKey,
     }
 
@@ -64,6 +74,7 @@ mod maki {
                 contract_start_timestamp: Self::env().block_timestamp(),
                 message_tree: MerkleTree::new(MERKLE_TREE_DEFAULT_DEPTH as u8).unwrap(),
                 state_tree: MerkleTree::new(MERKLE_TREE_DEFAULT_DEPTH as u8).unwrap(),
+                numberMessages: 0,
             }
         }
 
@@ -93,6 +104,31 @@ mod maki {
             if result.is_ok() {
                 self.env().emit_event(SignedUp { user_public_key });
             }
+
+            Ok(())
+        }
+
+        /// Publish message can be called by any user who signed up to cast a vote or change its public key.
+        /// ## Arguments
+        ///
+        /// * `user_public_key` - User's public key (encrypted using a shared key)
+        ///
+        /// * `message` - User's (encrypted) message containing the command(s)
+        ///
+        /// ## Returns
+        pub fn publish_message(
+            &mut self,
+            message: Message,
+            user_public_key: PublicKey,
+        ) -> Result<()> {
+            if self.numberMessages >= 2u32.pow(MERKLE_TREE_DEFAULT_DEPTH as u32) - 1 {
+                return Err(Error::MessageLimitReached);
+            }
+
+            self.env().emit_event(MessagePublished {
+                message,
+                user_public_key,
+            });
 
             Ok(())
         }
