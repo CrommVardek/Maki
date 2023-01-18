@@ -1,8 +1,10 @@
 pub mod hasher {
-    use crate::maki_objects::StateLeaf;
+    use crate::maki_objects::{StateLeaf, Message};
     use crate::maki_types::HashedLeaf;
 
     use dusk_bls12_381::BlsScalar;
+
+    use ink_prelude::vec::Vec;
 
     pub fn hash_state_leaf(state_leaf: &StateLeaf) -> HashedLeaf {
         let mut plain_leaf_voice_credit: [u8; 32] = [0; 32];
@@ -21,6 +23,10 @@ pub mod hasher {
 
     pub fn hash_left_right(left: &[u8; 32], right: &[u8; 32]) -> [u8; 32] {
         poseidon_hash(&[*left, *right])
+    }
+
+    pub fn hash_message(message: &Message) -> HashedLeaf {
+        poseidon_hash(&[message.data])
     }
 
     fn poseidon_hash(elements_to_hash: &[[u8; 32]]) -> [u8; 32] {

@@ -11,7 +11,7 @@ mod merkle_tree;
 #[ink::contract]
 mod maki {
 
-    use crate::hasher::hasher::hash_state_leaf;
+    use crate::hasher::hasher::{hash_message, hash_state_leaf};
     use crate::maki_objects::{Message, StateLeaf};
     use crate::maki_types::PublicKey;
     use crate::merkle_tree::{MerkleTree, MERKLE_TREE_DEFAULT_DEPTH};
@@ -31,7 +31,7 @@ mod maki {
         message_tree: MerkleTree,
         state_tree: MerkleTree,
 
-        numberMessages: u32,
+        number_messages: u32,
     }
 
     /// Errors which may be returned from the smart contract
@@ -74,7 +74,7 @@ mod maki {
                 contract_start_timestamp: Self::env().block_timestamp(),
                 message_tree: MerkleTree::new(MERKLE_TREE_DEFAULT_DEPTH as u8).unwrap(),
                 state_tree: MerkleTree::new(MERKLE_TREE_DEFAULT_DEPTH as u8).unwrap(),
-                numberMessages: 0,
+                number_messages: 0,
             }
         }
 
@@ -121,14 +121,32 @@ mod maki {
             message: Message,
             user_public_key: PublicKey,
         ) -> Result<()> {
-            if self.numberMessages >= 2u32.pow(MERKLE_TREE_DEFAULT_DEPTH as u32) - 1 {
+            if self.number_messages >= 2u32.pow(MERKLE_TREE_DEFAULT_DEPTH as u32) - 1 {
                 return Err(Error::MessageLimitReached);
             }
 
-            self.env().emit_event(MessagePublished {
-                message,
-                user_public_key,
-            });
+            let block_timestamp = self.env().block_timestamp();
+
+            if self.contract_start_timestamp
+                + u64::from(self.signup_duration_seconds) * 1000
+                + u64::from(self.vote_duration_seconds) * 1000
+                > block_timestamp
+            {
+                return Err(Error::VotingPeriodEnded);
+            }
+
+            let leaf = hash_message(&message);
+
+            let result = self.message_tree.insert_leaf(leaf);
+
+            if result.is_ok() {
+                self.number_messages += 1;
+
+                self.env().emit_event(MessagePublished {
+                    message,
+                    user_public_key,
+                });
+            }
 
             Ok(())
         }
@@ -147,10 +165,13 @@ mod maki {
 
         #[ink::test]
         fn sign_up_emits_sign_up_event() {
-            let mut maki = Maki::new(1000, 1000, [0; 32], 100);
+            let mut maki = Maki::new(10000, 10000, [0; 32], 100);
 
             let upk = [1; 32];
-            maki.sign_up(upk);
+
+            let result = maki.sign_up(upk);
+
+            assert!(result.is_ok());
 
             let events = ink_env::test::recorded_events().collect::<Vec<_>>();
 
@@ -167,6 +188,41 @@ mod maki {
                 );
             } else {
                 panic!("encountered unexpected event kind: expected a SignedUp event")
+            }
+        }
+
+        #[ink::test]
+        fn publish_message_emits_publish_message_event() {
+            let mut maki = Maki::new(10000, 10000, [0; 32], 100);
+            self.exec_context.block_timestamp += 10;
+
+            let msg = Message::new([2; 32]);
+            let upk = [1; 32];
+            let result = maki.publish_message(msg, upk);
+
+            assert!(result.is_ok());
+
+            let events = ink_env::test::recorded_events().collect::<Vec<_>>();
+
+            let events_length = &events.len();
+
+            assert_eq!(*events_length, 1);
+            let publish_message_event = &events[0];
+            let decoded_event =
+                <Event as scale::Decode>::decode(&mut &publish_message_event.data[..])
+                    .expect("encountered invalid contract event data buffer");
+            if let Event::MessagePublished(MessagePublished {
+                message,
+                user_public_key,
+            }) = decoded_event
+            {
+                assert_eq!(
+                    user_public_key, upk,
+                    "encountered invalid MessagePublished.user_public_key"
+                );
+                assert_eq!(message, msg, "encountered invalid MessagePublished.message");
+            } else {
+                panic!("encountered unexpected event kind: expected a MessagePublished event")
             }
         }
     }
