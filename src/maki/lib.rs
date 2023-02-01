@@ -89,7 +89,7 @@ mod maki {
             let block_timestamp = self.env().block_timestamp();
 
             if self.contract_start_timestamp + u64::from(self.signup_duration_seconds) * 1000
-                > block_timestamp
+                < block_timestamp
             {
                 return Err(Error::SignUpPeriodEnded);
             }
@@ -130,7 +130,7 @@ mod maki {
             if self.contract_start_timestamp
                 + u64::from(self.signup_duration_seconds) * 1000
                 + u64::from(self.vote_duration_seconds) * 1000
-                > block_timestamp
+                < block_timestamp
             {
                 return Err(Error::VotingPeriodEnded);
             }
@@ -194,7 +194,6 @@ mod maki {
         #[ink::test]
         fn publish_message_emits_publish_message_event() {
             let mut maki = Maki::new(10000, 10000, [0; 32], 100);
-            self.exec_context.block_timestamp += 10;
 
             let msg = Message::new([2; 32]);
             let upk = [1; 32];
