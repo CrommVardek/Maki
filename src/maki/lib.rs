@@ -192,6 +192,24 @@ mod maki {
         }
 
         #[ink::test]
+        fn sign_up_after_end_of_sign_up_period_returns_error() {
+
+            let mut maki = Maki::new(60, 10000, [0; 32], 100);
+
+            //default block time is 6 (in ms)
+            for _ in 0..10001 {
+                ink_env::test::advance_block::<ink_env::DefaultEnvironment>();
+            }
+
+            let upk = [1; 32];
+
+            let result = maki.sign_up(upk);
+
+            assert!(result.is_err());
+            assert_eq!(result, Err(Error::SignUpPeriodEnded));
+        }
+
+        #[ink::test]
         fn publish_message_emits_publish_message_event() {
             let mut maki = Maki::new(10000, 10000, [0; 32], 100);
 
@@ -223,6 +241,25 @@ mod maki {
             } else {
                 panic!("encountered unexpected event kind: expected a MessagePublished event")
             }
+        }
+
+        #[ink::test]
+        fn publish_message_after_end_of_voting_period_returns_error() {
+
+            let mut maki = Maki::new(60, 60, [0; 32], 100);
+
+            //default block time is 6 (in ms)
+            for _ in 0..20001 {
+                ink_env::test::advance_block::<ink_env::DefaultEnvironment>();
+            }
+
+            let msg = Message::new([2; 32]);
+            let upk = [1; 32];
+
+            let result = maki.publish_message(msg, upk);
+
+            assert!(result.is_err());
+            assert_eq!(result, Err(Error::VotingPeriodEnded));
         }
     }
 }
