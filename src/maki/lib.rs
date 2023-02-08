@@ -31,6 +31,11 @@ mod maki {
         message_tree: MerkleTree,
         state_tree: MerkleTree,
 
+        // Merkle Root of the state_tree
+        state_root: [u8; 32],
+
+        tree_depth: u8,
+
         number_messages: u32,
     }
 
@@ -65,16 +70,20 @@ mod maki {
             vote_duration_seconds: u32,
             coordinator_public_key: PublicKey,
             user_vote_credit: u16,
+            tree_depth: u8,
         ) -> Self {
+            let state_merkle_tree = MerkleTree::new(tree_depth).unwrap();
             Self {
                 signup_duration_seconds,
                 vote_duration_seconds,
                 coordinator_public_key,
                 user_vote_credit,
                 contract_start_timestamp: Self::env().block_timestamp(),
-                message_tree: MerkleTree::new(MERKLE_TREE_DEFAULT_DEPTH as u8).unwrap(),
-                state_tree: MerkleTree::new(MERKLE_TREE_DEFAULT_DEPTH as u8).unwrap(),
+                message_tree: MerkleTree::new(tree_depth).unwrap(),
+                state_root: state_merkle_tree.get_root(),
+                state_tree: state_merkle_tree,
                 number_messages: 0,
+                tree_depth,
             }
         }
 
@@ -121,7 +130,7 @@ mod maki {
             message: Message,
             user_public_key: PublicKey,
         ) -> Result<()> {
-            if self.number_messages >= 2u32.pow(MERKLE_TREE_DEFAULT_DEPTH as u32) - 1 {
+            if self.number_messages >= 2u32.pow(self.tree_depth as u32) - 1 {
                 return Err(Error::MessageLimitReached);
             }
 
@@ -150,6 +159,12 @@ mod maki {
 
             Ok(())
         }
+
+        pub fn process_messages(&mut self) {
+            //TODO
+
+            self.state_root = self.state_tree.get_root();
+        }
     }
 
     #[cfg(test)]
@@ -165,7 +180,7 @@ mod maki {
 
         #[ink::test]
         fn sign_up_emits_sign_up_event() {
-            let mut maki = Maki::new(10000, 10000, [0; 32], 100);
+            let mut maki = Maki::new(10000, 10000, [0; 32], 100, MERKLE_TREE_DEFAULT_DEPTH as u8);
 
             let upk = [1; 32];
 
@@ -193,8 +208,7 @@ mod maki {
 
         #[ink::test]
         fn sign_up_after_end_of_sign_up_period_returns_error() {
-
-            let mut maki = Maki::new(60, 10000, [0; 32], 100);
+            let mut maki = Maki::new(60, 10000, [0; 32], 100, MERKLE_TREE_DEFAULT_DEPTH as u8);
 
             //default block time is 6 (in ms)
             for _ in 0..10001 {
@@ -211,23 +225,25 @@ mod maki {
 
         #[ink::test]
         fn publish_message_returns_error_on_number_of_message_limit_reached() {
-            let mut maki = Maki::new(60, 10000, [0; 32], 100);
-    
+            let test_tree_depth: u8 = 8;
+
+            let mut maki = Maki::new(60, 10000, [0; 32], 100, test_tree_depth);
+
             let msg = Message::new([2; 32]);
             let upk = [1; 32];
-            for _ in 0..2usize.pow(MERKLE_TREE_DEFAULT_DEPTH as u32)-1 {
+            for _ in 0..2usize.pow(test_tree_depth as u32) - 1 {
                 maki.publish_message(msg, upk).unwrap();
             }
-    
+
             let err = maki.publish_message(msg, upk);
-    
+
             assert!(err.is_err());
             assert_eq!(err, Err(Error::MessageLimitReached));
         }
 
         #[ink::test]
         fn publish_message_emits_publish_message_event() {
-            let mut maki = Maki::new(10000, 10000, [0; 32], 100);
+            let mut maki = Maki::new(10000, 10000, [0; 32], 100, MERKLE_TREE_DEFAULT_DEPTH as u8);
 
             let msg = Message::new([2; 32]);
             let upk = [1; 32];
@@ -261,8 +277,7 @@ mod maki {
 
         #[ink::test]
         fn publish_message_after_end_of_voting_period_returns_error() {
-
-            let mut maki = Maki::new(60, 60, [0; 32], 100);
+            let mut maki = Maki::new(60, 60, [0; 32], 100, MERKLE_TREE_DEFAULT_DEPTH as u8);
 
             //default block time is 6 (in ms)
             for _ in 0..20001 {

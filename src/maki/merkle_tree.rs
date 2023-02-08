@@ -114,6 +114,10 @@ impl MerkleTree {
 
         return Ok(self.next_leaf_index);
     }
+
+    pub fn get_root(&self) -> [u8; 32] {
+        self.root
+    }
 }
 
 #[cfg(test)]
