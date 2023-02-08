@@ -210,6 +210,22 @@ mod maki {
         }
 
         #[ink::test]
+        fn publish_message_returns_error_on_number_of_message_limit_reached() {
+            let mut maki = Maki::new(60, 10000, [0; 32], 100);
+    
+            let msg = Message::new([2; 32]);
+            let upk = [1; 32];
+            for _ in 0..2usize.pow(MERKLE_TREE_DEFAULT_DEPTH as u32)-1 {
+                maki.publish_message(msg, upk).unwrap();
+            }
+    
+            let err = maki.publish_message(msg, upk);
+    
+            assert!(err.is_err());
+            assert_eq!(err, Err(Error::MessageLimitReached));
+        }
+
+        #[ink::test]
         fn publish_message_emits_publish_message_event() {
             let mut maki = Maki::new(10000, 10000, [0; 32], 100);
 
