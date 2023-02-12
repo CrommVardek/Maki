@@ -46,6 +46,7 @@ mod maki {
         SignUpPeriodEnded,
         VotingPeriodEnded,
         MessageLimitReached,
+        VotingPeriodNotEnded,
     }
 
     pub type Result<T> = core::result::Result<T, Error>;
@@ -160,10 +161,29 @@ mod maki {
             Ok(())
         }
 
-        pub fn process_messages(&mut self) {
-            //TODO
+        /// Process messages can be called by any user, however, only the coordinator is supposed to be able to decrypt the message.
+        /// Therefore the coordinator is the only user that will be able to provide a verified proof.
+        /// ## Arguments
+        ///
+        /// * `proof` - The zk-SNARK proof
+        ///
+        /// ## Returns
+        pub fn process_messages(&mut self, proof: [u8; 256]) -> Result<()> {
+            let block_timestamp = self.env().block_timestamp();
+
+            if self.contract_start_timestamp
+                + u64::from(self.signup_duration_seconds) * 1000
+                + u64::from(self.vote_duration_seconds) * 1000
+                >= block_timestamp
+            {
+                return Err(Error::VotingPeriodNotEnded);
+            }
+
+            // TODO
 
             self.state_root = self.state_tree.get_root();
+
+            Ok(())
         }
     }
 
@@ -291,6 +311,17 @@ mod maki {
 
             assert!(result.is_err());
             assert_eq!(result, Err(Error::VotingPeriodEnded));
+        }
+
+        #[ink::test]
+        fn process_messages_before_voting_period_ends_returns_error() {
+            let mut maki = Maki::new(60, 60, [0; 32], 100, MERKLE_TREE_DEFAULT_DEPTH as u8);
+
+            let proof = [123; 256];
+            let result = maki.process_messages(proof);
+
+            assert!(result.is_err());
+            assert_eq!(result, Err(Error::VotingPeriodNotEnded));
         }
     }
 }
