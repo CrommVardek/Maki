@@ -22,6 +22,7 @@ dusk-bls12_381 =  { version = "0.11.2", default-features = false }
 
 hex-literal = "0.3.4"
 getrandom = { version = "0.2.8", features = ["js"] }
+dusk-plonk = { version = "0.13.1", default-features = false}
 
 
 [lib]
