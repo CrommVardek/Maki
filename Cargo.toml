@@ -1,49 +1,5 @@
-[package]
-name = "maki"
-version = "0.0.1-alpha"
-authors = ["Cyril Carlier"]
-edition = "2021"
-
-[dependencies]
-ink_primitives = { version = "3.3", default-features = false }
-ink_metadata = { version = "3.3", default-features = false, features = ["derive"], optional = true }
-ink_env = { version = "3.3", default-features = false }
-ink_storage = { version = "3.3", default-features = false }
-ink_lang = { version = "3.3", default-features = false }
-ink_prelude = { version = "3.3", default-features = false }
-
-scale = { package = "parity-scale-codec", version = "3", default-features = false, features = ["derive"] }
-scale-info = { version = "2.3.1", default-features = false }
-
-dusk-poseidon = { version = "0.28.0", default-features = false, features = [
-    "alloc",
-] }
-dusk-bls12_381 =  { version = "0.11.2", default-features = false }
-
-hex-literal = "0.3.4"
-getrandom = { version = "0.2.8", features = ["js"] }
-dusk-plonk = { version = "0.13.1", default-features = false}
-
-
-[lib]
-name = "maki"
-path = "src/maki/lib.rs"
-crate-type = [
-	# Used for normal contract Wasm blobs.
-	"cdylib",
+[workspace]
+members = [
+    "maki",
+    "plonk_prover",
 ]
-
-[features]
-default = ["std"]
-std = [
-    "ink_metadata/std",
-    "ink_env/std",
-    "ink_storage/std",
-    "ink_primitives/std",
-    "scale/std",
-    "scale-info/std",
-]
-ink-as-dependency = []
-
-[profile.release]
-overflow-checks = false
