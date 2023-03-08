@@ -5,6 +5,7 @@ pub mod hasher {
     use dusk_bls12_381::BlsScalar;
 
     use ink_prelude::vec::Vec;
+    use maki_shared::functions_utils::bytes_to_u64;
 
     pub fn hash_state_leaf(state_leaf: &StateLeaf) -> HashedLeaf {
         let mut plain_leaf_voice_credit: [u8; 32] = [0; 32];
@@ -44,17 +45,6 @@ pub mod hasher {
 
     fn bytes_to_scalar(bytes: [u8; 32]) -> BlsScalar {
         BlsScalar(bytes_to_u64(bytes))
-    }
-
-    fn bytes_to_u64(bytes: [u8; 32]) -> [u64; 4] {
-        let mut result = [0; 4];
-
-        for i in 0..4 {
-            let bytes_array = <&[u8; 8]>::try_from(&bytes[i * 8..(i + 1) * 8]).unwrap();
-            result[i] = u64::from_be_bytes(*bytes_array);
-        }
-
-        result
     }
 
     fn scalar_to_bytes(scalar: BlsScalar) -> [u8; 32] {

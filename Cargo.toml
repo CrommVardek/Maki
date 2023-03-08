@@ -2,4 +2,5 @@
 members = [
     "maki",
     "plonk_prover",
+    "shared",
 ]

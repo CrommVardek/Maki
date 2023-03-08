@@ -24,6 +24,7 @@ hex-literal = "0.3.4"
 getrandom = { version = "0.2.8", features = ["js"] }
 dusk-plonk = { version = "0.13.1", default-features = false}
 
+maki-shared = { path = "../shared", default-features = false }
 
 [lib]
 name = "maki"
@@ -45,5 +46,3 @@ std = [
 ]
 ink-as-dependency = []
 
-[profile.release]
-overflow-checks = false

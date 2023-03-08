@@ -4,4 +4,4 @@ mod circuit;
 mod proof_verifier;
 mod proof_prover;
 
-pub mod proof_prover::{prove};
+pub use proof_prover::{prove};
