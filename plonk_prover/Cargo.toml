@@ -28,6 +28,7 @@ dusk-plonk = { version = "0.13.1", default-features = false}
 maki-shared = { path = "../shared", default-features = false }
 rand_core = "0.6.4"
 dusk-bytes = "0.1.6"
+dusk-jubjub = "0.12.1"
 
 [lib]
 name = "plonk_prover"
@@ -36,14 +37,7 @@ crate-type = ["cdylib", "rlib"]
 
 [features]
 default = ["std"]
-std = [
-    "ink_metadata/std",
-    "ink_env/std",
-    "ink_storage/std",
-    "ink_primitives/std",
-    "scale/std",
-    "scale-info/std",
-]
+std = ["ink_metadata/std", "ink_env/std", "ink_storage/std", "ink_primitives/std", "scale/std", "scale-info/std"]
 ink-as-dependency = []
 
 [profile.release]

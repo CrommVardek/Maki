@@ -4,14 +4,22 @@ pub(crate) const LABEL_TRANSCRIPT: &[u8; 14] = b"maki-arguments";
 
 #[derive(Debug, Default)]
 pub(crate) struct MakiCircuit {
-    // public inputs
-    a: BlsScalar,
-    b: BlsScalar,
-
     // private inputs
-    c: BlsScalar,
-    d: BlsScalar,
+    pub a: BlsScalar,
+    pub b: BlsScalar,
+    pub c: BlsScalar,
+    pub d: BlsScalar,
+    pub e: JubJubScalar,
+    // public inputs
+    pub f: JubJubAffine,
 }
+// TODO : change checks on circuit and inputs (both public and private)
+// Implement a circuit that checks:
+// 1) a + b = c where C is a PI
+// 2) a <= 2^6
+// 3) b <= 2^5
+// 4) a * b = d where D is a PI
+// 5) JubJub::GENERATOR * e(JubJubScalar) = f where F is a Public Input
 
 impl Circuit for MakiCircuit {
     fn circuit<C>(&self, composer: &mut C) -> Result<(), Error>
