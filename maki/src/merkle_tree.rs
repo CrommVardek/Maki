@@ -1,8 +1,7 @@
 use crate::hasher::hasher::hash_left_right;
 use hex_literal::hex;
 #[cfg(feature = "std")]
-use ink_storage::traits::StorageLayout;
-use ink_storage::traits::{PackedLayout, SpreadAllocate, SpreadLayout};
+use ink::storage::traits::StorageLayout;
 
 use crate::maki_types::HashedLeaf;
 
@@ -46,7 +45,7 @@ const MERKLE_TREE_ZEROS: [[u8; 32]; MERKLE_TREE_MAX_DEPTH + 1] = [
     hex!("ae91edaddca5e8e616541b5ea8809722a4aa3a65b748ed7a4b487229867b3dd0"),
 ];
 
-#[derive(scale::Encode, scale::Decode, PackedLayout, SpreadLayout, SpreadAllocate, PartialEq)]
+#[derive(scale::Encode, scale::Decode, PartialEq)]
 #[cfg_attr(feature = "std", derive(Debug, StorageLayout))]
 pub struct MerkleTree {
     tree_depth: u8,
