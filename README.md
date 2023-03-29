@@ -19,13 +19,13 @@ Maki is a [MACI](https://ethresear.ch/t/minimal-anti-collusion-infrastructure/54
 
 Command to build :
 
-`cargo +nightly-2022-08-15 contract build --manifest-path maki/Cargo.toml`
+`cargo contract build --manifest-path maki/Cargo.toml`
 
 ### Test
 
 Run the tests :
 
-`cargo +nightly-2022-08-15 test`
+`cargo test`
 
 ### Deploy
 
