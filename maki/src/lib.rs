@@ -223,13 +223,12 @@ pub mod maki {
 
         #[ink::test]
         fn sign_up_after_end_of_sign_up_period_returns_error() {
-            let mut maki = Maki::new(60, 10000, [0; 32], 100, MERKLE_TREE_DEFAULT_DEPTH as u8);
+            let signup_duration : u32 = 60;
+            let vote_duration : u32 = 10000;
+            let mut maki = Maki::new(signup_duration, vote_duration, [0; 32], 100, MERKLE_TREE_DEFAULT_DEPTH as u8);
 
-            //default block time is 6 (in ms)
-            for _ in 0..10001 {
-                ink_env::test::advance_block::<ink_env::DefaultEnvironment>();
-            }
-
+            ink_env::test::set_block_timestamp::<ink_env::DefaultEnvironment>(u64::from(signup_duration*1000 + 1));
+            
             let upk = [1; 32];
 
             let result = maki.sign_up(upk);
@@ -292,12 +291,11 @@ pub mod maki {
 
         #[ink::test]
         fn publish_message_after_end_of_voting_period_returns_error() {
-            let mut maki = Maki::new(60, 60, [0; 32], 100, MERKLE_TREE_DEFAULT_DEPTH as u8);
-
-            //default block time is 6 (in ms)
-            for _ in 0..20001 {
-                ink_env::test::advance_block::<ink_env::DefaultEnvironment>();
-            }
+            let signup_duration : u32 = 60;
+            let vote_duration : u32 = 60;
+            let mut maki = Maki::new(signup_duration, vote_duration, [0; 32], 100, MERKLE_TREE_DEFAULT_DEPTH as u8);
+            
+            ink_env::test::set_block_timestamp::<ink_env::DefaultEnvironment>(u64::from((signup_duration + vote_duration)*1000 + 1));
 
             let msg = Message::new([2; 32]);
             let upk = [1; 32];
