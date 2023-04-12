@@ -6,10 +6,8 @@ edition = "2021"
 
 [dependencies]
 ink_primitives = { version = "4.1.0", default-features = false }
-ink_metadata = { version = "3.3", default-features = false, features = ["derive"], optional = true }
 ink_env = { version = "4.1.0", default-features = false }
 ink_storage = { version = "4.1.0", default-features = false }
-ink_lang = { version = "3.3", default-features = false }
 ink_prelude = { version = "4.1.0", default-features = false }
 ink = { version = "4.1.0", default-features = false }
 
@@ -32,6 +30,10 @@ path = "src/lib.rs"
 
 [features]
 default = ["std"]
-std = ["ink_metadata/std", "ink_env/std", "ink_storage/std", "ink_primitives/std", "scale/std", "scale-info/std"]
+std = ["ink/std", "ink_env/std", "ink_storage/std", "ink_primitives/std", "scale/std", "scale-info/std"]
 ink-as-dependency = []
+
+[profile.release]
+overflow-checks = false     # Disable integer overflow checks.
+lto = false                 # Enable full link-time optimization. 
 

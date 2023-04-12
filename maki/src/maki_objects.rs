@@ -1,13 +1,10 @@
 #[cfg(feature = "std")]
-use ink_storage::traits::StorageLayout;
-use ink_storage::traits::{PackedLayout, SpreadAllocate, SpreadLayout};
-use ink::storage_item;
+use ink::storage::traits::StorageLayout;
 
 use crate::maki_types::{PublicKey, VoteOptionTreeRoot};
 
 #[derive(scale::Encode, scale::Decode)]
-#[ink::storage_item]
-#[cfg_attr(feature = "std", derive(Debug))]
+#[cfg_attr(feature = "std",derive(scale_info::TypeInfo, StorageLayout))]
 pub struct StateLeaf {
     pub public_key: PublicKey,
     pub voice_credit_balance: u16,
@@ -40,8 +37,7 @@ impl StateLeaf {
     Clone,
     Copy,
 )]
-#[ink::storage_item]
-#[cfg_attr(feature = "std", derive(Debug, scale_info::TypeInfo))]
+#[cfg_attr(feature = "std", derive(Debug, scale_info::TypeInfo,StorageLayout))]
 pub struct Message {
     pub data: [u8; 32],
 }

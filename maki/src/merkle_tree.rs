@@ -46,7 +46,7 @@ const MERKLE_TREE_ZEROS: [[u8; 32]; MERKLE_TREE_MAX_DEPTH + 1] = [
 ];
 
 #[derive(scale::Encode, scale::Decode, PartialEq)]
-#[cfg_attr(feature = "std", derive(Debug, StorageLayout))]
+#[cfg_attr(feature = "std", derive(Debug, scale_info::TypeInfo, StorageLayout))]
 pub struct MerkleTree {
     tree_depth: u8,
     next_leaf_index: u128,

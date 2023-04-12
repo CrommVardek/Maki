@@ -1,15 +1,12 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-use ink_env;
-use ink_lang as ink;
-
 mod hasher;
 mod maki_objects;
 mod maki_types;
 mod merkle_tree;
 
 #[ink::contract]
-mod maki {
+pub mod maki {
 
     use crate::hasher::hasher::{hash_message, hash_state_leaf};
     use crate::maki_objects::{Message, StateLeaf};
@@ -192,11 +189,9 @@ mod maki {
         // Imports all the definitions from the outer scope so we can use them here.
         use super::*;
 
-        // Imports `ink_lang` so we can use `#[ink::test]`.
         use ink_env;
-        use ink_lang as ink;
 
-        type Event = <Maki as ::ink_lang::reflect::ContractEventBase>::Type;
+        type Event = <Maki as ::ink::reflect::ContractEventBase>::Type;
 
         #[ink::test]
         fn sign_up_emits_sign_up_event() {
