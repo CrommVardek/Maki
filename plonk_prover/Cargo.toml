@@ -26,7 +26,6 @@ dusk-jubjub = "0.12.1"
 [lib]
 name = "plonk_prover"
 path = "src/lib.rs"
-crate-type = ["cdylib", "rlib"]
 
 [features]
 default = ["std"]
