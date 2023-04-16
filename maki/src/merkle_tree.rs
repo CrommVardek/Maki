@@ -7,6 +7,7 @@ use crate::maki_types::HashedLeaf;
 
 const MERKLE_TREE_MAX_DEPTH: usize = 32;
 
+#[cfg(test)]
 pub const MERKLE_TREE_DEFAULT_DEPTH: usize = 24;
 
 const MERKLE_TREE_ZEROS: [[u8; 32]; MERKLE_TREE_MAX_DEPTH + 1] = [

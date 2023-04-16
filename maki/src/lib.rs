@@ -11,7 +11,7 @@ pub mod maki {
     use crate::hasher::hasher::{hash_message, hash_state_leaf};
     use crate::maki_objects::{Message, StateLeaf};
     use crate::maki_types::PublicKey;
-    use crate::merkle_tree::{MerkleTree, MERKLE_TREE_DEFAULT_DEPTH};
+    use crate::merkle_tree::MerkleTree;
 
     #[ink(storage)]
     pub struct Maki {
@@ -191,6 +191,8 @@ pub mod maki {
 
         use ink_env;
 
+        use crate::merkle_tree::MERKLE_TREE_DEFAULT_DEPTH;
+
         type Event = <Maki as ::ink::reflect::ContractEventBase>::Type;
 
         #[ink::test]
@@ -223,12 +225,20 @@ pub mod maki {
 
         #[ink::test]
         fn sign_up_after_end_of_sign_up_period_returns_error() {
-            let signup_duration : u32 = 60;
-            let vote_duration : u32 = 10000;
-            let mut maki = Maki::new(signup_duration, vote_duration, [0; 32], 100, MERKLE_TREE_DEFAULT_DEPTH as u8);
+            let signup_duration: u32 = 60;
+            let vote_duration: u32 = 10000;
+            let mut maki = Maki::new(
+                signup_duration,
+                vote_duration,
+                [0; 32],
+                100,
+                MERKLE_TREE_DEFAULT_DEPTH as u8,
+            );
 
-            ink_env::test::set_block_timestamp::<ink_env::DefaultEnvironment>(u64::from(signup_duration*1000 + 1));
-            
+            ink_env::test::set_block_timestamp::<ink_env::DefaultEnvironment>(u64::from(
+                signup_duration * 1000 + 1,
+            ));
+
             let upk = [1; 32];
 
             let result = maki.sign_up(upk);
@@ -291,11 +301,19 @@ pub mod maki {
 
         #[ink::test]
         fn publish_message_after_end_of_voting_period_returns_error() {
-            let signup_duration : u32 = 60;
-            let vote_duration : u32 = 60;
-            let mut maki = Maki::new(signup_duration, vote_duration, [0; 32], 100, MERKLE_TREE_DEFAULT_DEPTH as u8);
-            
-            ink_env::test::set_block_timestamp::<ink_env::DefaultEnvironment>(u64::from((signup_duration + vote_duration)*1000 + 1));
+            let signup_duration: u32 = 60;
+            let vote_duration: u32 = 60;
+            let mut maki = Maki::new(
+                signup_duration,
+                vote_duration,
+                [0; 32],
+                100,
+                MERKLE_TREE_DEFAULT_DEPTH as u8,
+            );
+
+            ink_env::test::set_block_timestamp::<ink_env::DefaultEnvironment>(u64::from(
+                (signup_duration + vote_duration) * 1000 + 1,
+            ));
 
             let msg = Message::new([2; 32]);
             let upk = [1; 32];
