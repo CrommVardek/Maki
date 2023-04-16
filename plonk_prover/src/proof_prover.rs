@@ -12,7 +12,8 @@ pub fn prove(
     b: BlsScalar,
     c: BlsScalar,
     d: BlsScalar,
-    e: JubJubScalar, // public inputs
+    e: JubJubScalar, 
+    // public inputs
     f: JubJubAffine,
 ) -> Result<SerializedProof, Error> {
     //Read public parameters

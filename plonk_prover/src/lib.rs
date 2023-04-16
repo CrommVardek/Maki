@@ -5,3 +5,4 @@ mod proof_verifier;
 mod proof_prover;
 
 pub use proof_prover::{prove};
+pub use proof_verifier::{verify};
