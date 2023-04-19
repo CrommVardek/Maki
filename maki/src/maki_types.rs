@@ -1,5 +1,6 @@
-//TODO : change this to struct that is composed of two fields X and Y
-pub type PublicKey = [u8; 32];
+use maki_shared::types::{PublicKey as SharedTypePublicKey};
+
+pub type PublicKey = SharedTypePublicKey;
 
 pub type HashedLeaf = [u8; 32];
 

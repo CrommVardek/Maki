@@ -5,7 +5,7 @@ use maki_shared::types::SerializedProof;
 
 use crate::circuit::*;
 
-// TODO : Add Public parameters and use accordingly
+// TODO : Add Public inputs and use accordingly
 pub fn verify(
     public_parameters: &[u8],
     proof: &SerializedProof,

@@ -1,4 +1,5 @@
 use dusk_plonk::prelude::*;
+use maki_shared::types::{PublicKey, TreeRoot};
 
 pub(crate) const LABEL_TRANSCRIPT: &[u8; 14] = b"maki-arguments";
 
@@ -9,9 +10,10 @@ pub(crate) struct MakiCircuit {
     pub b: BlsScalar,
     pub c: BlsScalar,
     pub d: BlsScalar,
-    pub e: JubJubScalar,
+    pub hashed_private_key: BlsScalar,
     // public inputs
-    pub f: JubJubAffine,
+    pub new_state_root: TreeRoot,
+    pub public_key: PublicKey,
 }
 // TODO : change checks on circuit and inputs (both public and private)
 // Implement a circuit that checks:
@@ -19,7 +21,7 @@ pub(crate) struct MakiCircuit {
 // 2) a <= 2^6
 // 3) b <= 2^5
 // 4) a * b = d where D is a PI
-// 5) JubJub::GENERATOR * e(JubJubScalar) = f where F is a Public Input
+// TODO
 
 impl Circuit for MakiCircuit {
     fn circuit<C>(&self, composer: &mut C) -> Result<(), Error>
@@ -27,7 +29,7 @@ impl Circuit for MakiCircuit {
         C: Composer,
     {
         let a = composer.append_witness(self.a);
-        let b = composer.append_witness(self.b);
+        let b = composer.append_witness(self.b); 
 
         // Make first constraint a + b = c
         let constraint = Constraint::new().left(1).right(1).public(-self.c).a(a).b(b);
@@ -43,12 +45,12 @@ impl Circuit for MakiCircuit {
 
         composer.append_gate(constraint);
 
-        let e = composer.append_witness(self.e);
-        let scalar_mul_result =
-            composer.component_mul_generator(e, dusk_jubjub::GENERATOR_EXTENDED)?;
+        // let e = composer.append_witness(self.e);
+        // let scalar_mul_result =
+        //     composer.component_mul_generator(e, dusk_jubjub::GENERATOR_EXTENDED)?;
 
-        // Apply the constraint
-        composer.assert_equal_public_point(scalar_mul_result, self.f);
+        // // Apply the constraint
+        // composer.assert_equal_public_point(scalar_mul_result, self.f);
 
         Ok(())
     }

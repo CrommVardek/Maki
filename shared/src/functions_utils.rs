@@ -1,3 +1,5 @@
+use dusk_bls12_381::BlsScalar;
+
 pub fn bytes_to_u64(bytes: [u8; 32]) -> [u64; 4] {
     let mut result = [0; 4];
 
@@ -7,4 +9,9 @@ pub fn bytes_to_u64(bytes: [u8; 32]) -> [u64; 4] {
     }
 
     result
+}
+
+
+pub fn bytes_to_scalar(bytes: [u8; 32]) -> BlsScalar {
+    BlsScalar(bytes_to_u64(bytes))
 }
