@@ -1,5 +1,5 @@
 pub mod hasher {
-    use crate::maki_objects::{StateLeaf, Message};
+    use crate::maki_objects::{Message, StateLeaf};
     use crate::maki_types::HashedLeaf;
 
     use dusk_bls12_381::BlsScalar;
@@ -58,5 +58,35 @@ pub mod hasher {
         }
 
         result
+    }
+
+    #[test]
+    fn u64_to_bytes_works_under_256() {
+        let array: [u64; 4] = [10, 255, 0, 3];
+
+        let result = u64_to_bytes(array);
+
+        assert_eq!(
+            [
+                0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 3
+            ],
+            result
+        )
+    }
+
+    #[test]
+    fn u64_to_bytes_works_over_256() {
+        let array: [u64; 4] = [196710, 257, 0, 899];
+
+        let result = u64_to_bytes(array);
+
+        assert_eq!(
+            [
+                0, 0, 0, 0, 0, 3, 0, 102, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 3, 131
+            ],
+            result
+        )
     }
 }
