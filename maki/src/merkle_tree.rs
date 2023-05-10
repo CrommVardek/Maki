@@ -2,6 +2,7 @@ use crate::hasher::hasher::hash_left_right;
 use hex_literal::hex;
 #[cfg(feature = "std")]
 use ink::storage::traits::StorageLayout;
+use maki_shared::types::TreeRoot;
 
 use crate::maki_types::HashedLeaf;
 
@@ -52,7 +53,7 @@ pub struct MerkleTree {
     tree_depth: u8,
     next_leaf_index: u128,
     filled_subtrees: [[u8; 32]; MERKLE_TREE_MAX_DEPTH],
-    root: [u8; 32],
+    root: TreeRoot,
 }
 
 #[derive(Debug, PartialEq)]

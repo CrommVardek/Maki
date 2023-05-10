@@ -4,14 +4,19 @@ mod hasher;
 mod maki_objects;
 mod maki_types;
 mod merkle_tree;
+mod snark_verifier;
 
 #[ink::contract]
 pub mod maki {
+
+    use maki_shared::functions_utils::generate_public_parameters;
+    use maki_shared::types::SerializedProof;
 
     use crate::hasher::hasher::{hash_message, hash_state_leaf};
     use crate::maki_objects::{Message, StateLeaf};
     use crate::maki_types::PublicKey;
     use crate::merkle_tree::MerkleTree;
+    use crate::snark_verifier::verify_proof;
 
     #[ink(storage)]
     pub struct Maki {
@@ -165,7 +170,7 @@ pub mod maki {
         /// * `proof` - The zk-SNARK proof
         ///
         /// ## Returns
-        pub fn process_messages(&mut self, proof: [u8; 256]) -> Result<()> {
+        pub fn process_messages(&mut self, proof: SerializedProof) -> Result<()> {
             let block_timestamp = self.env().block_timestamp();
 
             if self.contract_start_timestamp
@@ -178,7 +183,13 @@ pub mod maki {
 
             // TODO
 
-            self.state_root = self.state_tree.get_root();
+            let public_parameters = generate_public_parameters(self.state_tree.get_root());
+
+            let proved = verify_proof(&public_parameters);
+
+            if proved {
+                self.state_root = self.state_tree.get_root();
+            }
 
             Ok(())
         }
@@ -328,7 +339,7 @@ pub mod maki {
         fn process_messages_before_voting_period_ends_returns_error() {
             let mut maki = Maki::new(60, 60, [0; 32], 100, MERKLE_TREE_DEFAULT_DEPTH as u8);
 
-            let proof = [123; 256];
+            let proof = [123; 1040];
             let result = maki.process_messages(proof);
 
             assert!(result.is_err());
