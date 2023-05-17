@@ -63,7 +63,7 @@ pub mod maki {
     #[ink(event)]
     pub struct MessagePublished {
         message: Message,
-        user_public_key: PublicKey,
+        ecdh_public_key: PublicKey,
     }
 
     impl Maki {
@@ -123,7 +123,8 @@ pub mod maki {
         /// Publish message can be called by any user who signed up to cast a vote or change its public key.
         /// ## Arguments
         ///
-        /// * `user_public_key` - User's public key (encrypted using a shared key)
+        /// * `ecdh_public_key` - An ephemeral public key that can be combined 
+        /// with the coordinator's private key to generate an ECDH shared key which was used to encrypt the message.
         ///
         /// * `message` - User's (encrypted) message containing the command(s)
         ///
@@ -131,7 +132,7 @@ pub mod maki {
         pub fn publish_message(
             &mut self,
             message: Message,
-            user_public_key: PublicKey,
+            ecdh_public_key: PublicKey,
         ) -> Result<()> {
             if self.number_messages >= 2u32.pow(self.tree_depth as u32) - 1 {
                 return Err(Error::MessageLimitReached);
@@ -156,7 +157,7 @@ pub mod maki {
 
                 self.env().emit_event(MessagePublished {
                     message,
-                    user_public_key,
+                    ecdh_public_key,
                 });
             }
 
@@ -170,7 +171,11 @@ pub mod maki {
         /// * `proof` - The zk-SNARK proof
         ///
         /// ## Returns
-        pub fn process_messages(&mut self, proof: SerializedProof) -> Result<()> {
+        pub fn process_messages(
+            &mut self,
+            proof: SerializedProof,
+            public_key: PublicKey,
+        ) -> Result<()> {
             let block_timestamp = self.env().block_timestamp();
 
             if self.contract_start_timestamp
@@ -183,7 +188,11 @@ pub mod maki {
 
             // TODO
 
-            let public_parameters = generate_public_parameters(self.state_tree.get_root());
+            let public_parameters = generate_public_parameters(
+                self.state_tree.get_root(),
+                public_key,
+                self.coordinator_public_key,
+            );
 
             let proved = verify_proof(&public_parameters);
 
@@ -297,11 +306,11 @@ pub mod maki {
                     .expect("encountered invalid contract event data buffer");
             if let Event::MessagePublished(MessagePublished {
                 message,
-                user_public_key,
+                ecdh_public_key,
             }) = decoded_event
             {
                 assert_eq!(
-                    user_public_key, upk,
+                    ecdh_public_key, upk,
                     "encountered invalid MessagePublished.user_public_key"
                 );
                 assert_eq!(message, msg, "encountered invalid MessagePublished.message");
@@ -340,7 +349,8 @@ pub mod maki {
             let mut maki = Maki::new(60, 60, [0; 32], 100, MERKLE_TREE_DEFAULT_DEPTH as u8);
 
             let proof = [123; 1040];
-            let result = maki.process_messages(proof);
+            let pk: PublicKey = [2;32];
+            let result = maki.process_messages(proof, pk);
 
             assert!(result.is_err());
             assert_eq!(result, Err(Error::VotingPeriodNotEnded));
