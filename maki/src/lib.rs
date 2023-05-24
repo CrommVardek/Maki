@@ -194,7 +194,7 @@ pub mod maki {
                 self.coordinator_public_key,
             );
 
-            let proved = verify_proof(&public_parameters);
+            let proved = verify_proof(&proof, &public_parameters);
 
             if proved {
                 self.state_root = self.state_tree.get_root();

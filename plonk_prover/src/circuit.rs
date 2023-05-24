@@ -1,5 +1,4 @@
 use dusk_plonk::prelude::*;
-use maki_shared::types::{PublicKey, TreeRoot};
 
 pub(crate) const LABEL_TRANSCRIPT: &[u8; 14] = b"maki-arguments";
 
@@ -12,8 +11,8 @@ pub(crate) struct MakiCircuit {
     pub d: BlsScalar,
     pub hashed_private_key: BlsScalar,
     // public inputs
-    pub new_state_root: TreeRoot,
-    pub public_key: PublicKey,
+    pub new_state_root: BlsScalar,
+    pub public_key: BlsScalar,
 }
 // TODO : change checks on circuit and inputs (both public and private)
 // Implement a circuit that checks:
@@ -29,7 +28,7 @@ impl Circuit for MakiCircuit {
         C: Composer,
     {
         let a = composer.append_witness(self.a);
-        let b = composer.append_witness(self.b); 
+        let b = composer.append_witness(self.b);
 
         // Make first constraint a + b = c
         let constraint = Constraint::new().left(1).right(1).public(-self.c).a(a).b(b);
@@ -51,6 +50,9 @@ impl Circuit for MakiCircuit {
 
         // // Apply the constraint
         // composer.assert_equal_public_point(scalar_mul_result, self.f);
+
+        let new_state_root = composer.append_public(self.new_state_root);
+        let public_key = composer.append_public(self.public_key);
 
         Ok(())
     }

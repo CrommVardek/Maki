@@ -6,3 +6,11 @@ mod proof_prover;
 
 pub use proof_prover::{prove};
 pub use proof_verifier::{verify};
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn verify_proof_success(){
+        
+    }
+}
