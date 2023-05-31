@@ -189,9 +189,9 @@ pub mod maki {
             // TODO
 
             let public_parameters = generate_public_parameters(
-                self.state_tree.get_root(),
-                public_key,
-                self.coordinator_public_key,
+                &self.state_tree.get_root(),
+                &public_key,
+                &self.coordinator_public_key,
             );
 
             let proved = verify_proof(&proof, &public_parameters);

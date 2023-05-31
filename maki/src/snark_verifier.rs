@@ -3,7 +3,8 @@ use plonk_prover::verify;
 
 
 
-pub fn verify_proof(proof: &SerializedProof,  pp: &[[u8; 32]]) -> bool {
+pub fn verify_proof(proof: &SerializedProof,  pp: &[u8]) -> bool {
+    // TODO
     verify(pp, proof, f).map(|_| true)
     .unwrap_or(false)
 }
