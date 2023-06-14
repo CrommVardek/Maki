@@ -16,7 +16,7 @@ pub mod maki {
     use crate::maki_objects::{Message, StateLeaf};
     use crate::maki_types::PublicKey;
     use crate::merkle_tree::MerkleTree;
-    use crate::snark_verifier::verify_proof;
+    use crate::snark_verifier::verify_proof_process_message;
 
     #[ink(storage)]
     pub struct Maki {
@@ -194,7 +194,7 @@ pub mod maki {
                 &self.coordinator_public_key,
             );
 
-            let proved = verify_proof(&proof, &public_parameters);
+            let proved = verify_proof_process_message(&proof, &public_parameters);
 
             if proved {
                 self.state_root = self.state_tree.get_root();
